@@ -49,3 +49,9 @@
 "Paused — press %@ to resume, %@ to stop." = "일시 중지됨 — %@을(를) 눌러 재개, %@을(를) 눌러 중지.";
 "Lock the pointer completely while playing" = "연주 중 포인터 완전히 잠금";
 "When off, the pointer is only paused while your fingers are on the glass." = "끄면 손가락이 트랙패드에 닿아 있는 동안만 포인터가 멈춥니다.";
+"Edit pads…" = "패드 편집…";
+"Edit pads" = "패드 편집";
+"Click a pad to color it." = "패드를 클릭해 색상을 지정하세요.";
+"Color" = "색상";
+"Custom" = "사용자 지정";
+"Use default color" = "기본 색상 사용";

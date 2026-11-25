@@ -25,6 +25,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
     let velocityField = NSTextField()
     let confirmButton = NSButton()
     let openSettingsButton = NSButton()
+    let editPadsButton = NSButton()
 
     // Captions, kept so a language change can re-render them.
     private let deviceCaption = NSTextField(labelWithString: "")
@@ -121,6 +122,10 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         openSettingsButton.action = #selector(openSettingsClicked(_:))
         openSettingsButton.isHidden = true
 
+        editPadsButton.bezelStyle = .rounded
+        editPadsButton.target = self
+        editPadsButton.action = #selector(editPadsClicked(_:))
+
         devicePopup.target = self
         devicePopup.action = #selector(deviceChanged(_:))
         languagePopup.target = self
@@ -201,6 +206,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
             [caption(deviceCaption), devicePopup],
             [caption(rowsCaption), rowsCluster],
             [caption(colsCaption), colsCluster],
+            [NSGridCell.emptyContentView, editPadsButton],
             [NSGridCell.emptyContentView, pausePointerCheckbox],
             [NSGridCell.emptyContentView, pausePointerHint],
             [NSGridCell.emptyContentView, lockPointerCheckbox],
@@ -350,6 +356,10 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         openAccessibilitySettings()
     }
 
+    @objc func editPadsClicked(_ sender: NSButton) {
+        padEditorWindow.show()
+    }
+
     /// Reads the fields; on a bad value, says why and returns nil.
     private func validatedFields() -> (rows: Int, cols: Int, channel: Int, base: Int, vel: Int)? {
         guard let rows = Int(rowsField.stringValue), let cols = Int(colsField.stringValue),
@@ -386,6 +396,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
             ensureAccessibilityInterest()
         }
         padWindow.gridView.needsDisplay = true
+        refreshPadEditorIfExists()
         performStateChanged()
         // Saved and done: the window's job is over until the menu bar brings it back.
         window.close()
@@ -472,6 +483,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         recordButton.title = L("Record")
         pauseRecordButton.title = L("Record")
         openSettingsButton.title = L("Open System Settings")
+        editPadsButton.title = L("Edit pads…")
         updateDevicePopup()
         updateLanguagePopup()
         updateConfirmButton()

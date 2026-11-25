@@ -82,11 +82,32 @@ final class PadWindowController: NSObject, NSWindowDelegate {
             settings.save()
         }
         applyPinState()
-        if !window.isVisible {
-            window.setFrameTopLeftPoint(NSPoint(x: window.frame.origin.x == 0 ? 200 : window.frame.origin.x,
-                                                y: window.frame.origin.y == 0 ? 700 : window.frame.origin.y))
-        }
+        if !window.isVisible { restorePosition() }
         window.orderFront(nil)
+    }
+
+    /// Where the window appears: the spot the player left it (persisted on every move), or
+    /// the main screen's top-right corner on first run.
+    private func restorePosition() {
+        if let x = settings.padWindowX, let y = settings.padWindowY {
+            let frame = NSRect(x: x, y: y, width: window.frame.width, height: window.frame.height)
+            // A monitor could have left since: only trust positions still on a screen.
+            if NSScreen.screens.contains(where: { $0.visibleFrame.intersects(frame) }) {
+                window.setFrameOrigin(NSPoint(x: x, y: y))
+                return
+            }
+        }
+        if let visible = NSScreen.main?.visibleFrame {
+            window.setFrameTopLeftPoint(NSPoint(x: visible.maxX - window.frame.width - 16,
+                                                y: visible.maxY - 16))
+        }
+    }
+
+    /// Remembers where the player parks the pads.
+    func windowDidMove(_ notification: Notification) {
+        settings.padWindowX = Double(window.frame.origin.x)
+        settings.padWindowY = Double(window.frame.origin.y)
+        settings.save()
     }
 
     func hide() {

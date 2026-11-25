@@ -98,8 +98,7 @@ func beginPerformance() {
     performing = true
     // Full lock hides the cursor outright: a frozen pointer on screen is just a distraction.
     if settings.pausePointer && settings.lockPointer {
-        NSCursor.hide()
-        cursorHidden = true
+        hideCursor()
     }
     os_unfair_lock_lock(&displayLock)
     displayState.performing = true
@@ -159,8 +158,7 @@ func stopPerformance(reason: StopReason) {
     }
     removeEventTap()
     if cursorHidden {
-        NSCursor.unhide()
-        cursorHidden = false
+        showCursor()
     }
     clearTouchState()
     os_unfair_lock_lock(&displayLock)

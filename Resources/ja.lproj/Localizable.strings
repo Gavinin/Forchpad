@@ -49,3 +49,9 @@
 "Paused — press %@ to resume, %@ to stop." = "一時停止中 — %@ で再開、%@ で停止。";
 "Lock the pointer completely while playing" = "演奏中はポインターを完全にロック";
 "When off, the pointer is only paused while your fingers are on the glass." = "オフの場合、指がガラスに触れている間だけポインターが停止します。";
+"Edit pads…" = "パッドを編集…";
+"Edit pads" = "パッドを編集";
+"Click a pad to color it." = "パッドをクリックして色を設定します。";
+"Color" = "カラー";
+"Custom" = "カスタム";
+"Use default color" = "デフォルトの色を使用";

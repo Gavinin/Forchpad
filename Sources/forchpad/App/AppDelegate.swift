@@ -111,6 +111,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         rebuildMenu()
         settingsWindow.relocalize()
         padWindow.relocalize()
+        relocalizePadEditorIfExists()
     }
 
     /// Keeps the device list fresh when idle; while playing, only watches for the device going away.

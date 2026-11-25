@@ -1,10 +1,43 @@
 import Cocoa
 
+/// The margin and spacing every pad layout shares (drawing, hit test, selection ring).
+private let padInset: CGFloat = 12
+private let padGap: CGFloat = 8
+
 /// Draws the pads (note number in the corner, lit while down) and a dot per live finger.
-/// The pads are glass tiles on the window's frosted backdrop — the same language as the icon.
+/// Each pad is a Launchpad-style light in its own assigned color: brightest at the center,
+/// easing to a dark rim. Unassigned pads stay neutral glass.
 /// Everything is drawn with CGPath: NSBezierPath.cgPath needs macOS 14, we target 12.
-final class GridView: NSView {
+class GridView: NSView {
     override var isFlipped: Bool { true }   // so the first row drawn is the top row
+
+    // MARK: Layout
+
+    /// One pad's rect in view coordinates. visualRow 0 is the top row on screen.
+    func padRect(visualRow: Int, col: Int) -> CGRect {
+        let rows = settings.rows, cols = settings.cols
+        let area = bounds.insetBy(dx: padInset, dy: padInset)
+        let cw = (area.width - padGap * CGFloat(cols - 1)) / CGFloat(cols)
+        let ch = (area.height - padGap * CGFloat(rows - 1)) / CGFloat(rows)
+        return CGRect(x: area.origin.x + CGFloat(col) * (cw + padGap),
+                      y: area.origin.y + CGFloat(visualRow) * (ch + padGap),
+                      width: cw, height: ch)
+    }
+
+    /// The pad under a view point, or nil in a gap or the margin. Row is the touch row
+    /// (0 = bottom) — the same numbering the engine uses for notes.
+    func padAt(viewPoint: NSPoint) -> (row: Int, col: Int)? {
+        guard settings.rows > 0, settings.cols > 0 else { return nil }
+        for visualRow in 0..<settings.rows {
+            for col in 0..<settings.cols
+            where padRect(visualRow: visualRow, col: col).contains(viewPoint) {
+                return (settings.rows - 1 - visualRow, col)
+            }
+        }
+        return nil
+    }
+
+    // MARK: Drawing
 
     override func draw(_ dirty: NSRect) {
         let rows = settings.rows, cols = settings.cols
@@ -16,11 +49,9 @@ final class GridView: NSView {
         let isLive = displayState.performing
         os_unfair_lock_unlock(&displayLock)
 
-        let inset: CGFloat = 12
-        let gap: CGFloat = 8
-        let area = bounds.insetBy(dx: inset, dy: inset)
-        let cw = (area.width - gap * CGFloat(cols - 1)) / CGFloat(cols)
-        let ch = (area.height - gap * CGFloat(rows - 1)) / CGFloat(rows)
+        let area = bounds.insetBy(dx: padInset, dy: padInset)
+        let cw = (area.width - padGap * CGFloat(cols - 1)) / CGFloat(cols)
+        let ch = (area.height - padGap * CGFloat(rows - 1)) / CGFloat(rows)
         guard cw > 0, ch > 0 else { return }
 
         let accent = NSColor.controlAccentColor
@@ -49,34 +80,53 @@ final class GridView: NSView {
                 // Top of the window is the far side of the glass (y near 1).
                 let touchRow = rows - 1 - visualRow
                 let cell = touchRow * cols + col
-                let rect = CGRect(x: area.origin.x + CGFloat(col) * (cw + gap),
-                                  y: area.origin.y + CGFloat(visualRow) * (ch + gap),
-                                  width: cw, height: ch)
+                let rect = padRect(visualRow: visualRow, col: col)
                 let down = pads[cell]
                 let path = roundPath(rect)
+                let center = CGPoint(x: rect.midX, y: rect.midY)
+                // This pad's assigned color; unassigned pads play with the system accent.
+                let custom = settings.padColor(row: touchRow, col: col)
+                let base = custom ?? accent
 
                 if let size = down {
                     let intensity = CGFloat(min(1, 0.35 + size * 6))
                     // Luminous glass: a halo behind the pad, then the lit face.
                     let halo = CGGradient(colorsSpace: cs, colors: [
-                        accent.withAlphaComponent(0.40 * intensity).cgColor,
-                        accent.withAlphaComponent(0).cgColor,
+                        base.withAlphaComponent(0.40 * intensity).cgColor,
+                        base.withAlphaComponent(0).cgColor,
                     ] as CFArray, locations: [0, 1])!
-                    ctx.drawRadialGradient(halo, startCenter: CGPoint(x: rect.midX, y: rect.midY),
-                                           startRadius: 0, endCenter: CGPoint(x: rect.midX, y: rect.midY),
-                                           endRadius: max(cw, ch) * 0.95, options: [])
+                    ctx.drawRadialGradient(halo, startCenter: center, startRadius: 0,
+                                           endCenter: center, endRadius: max(cw, ch) * 0.95, options: [])
+                    // The Launchpad LED: a white-hot center, the pad's color, a dark rim.
                     let face = CGGradient(colorsSpace: cs, colors: [
-                        accent.blended(withFraction: 0.35, of: .white)!.cgColor,
-                        accent.cgColor,
+                        base.blended(withFraction: 0.55 * intensity, of: .white)!.cgColor,
+                        base.cgColor,
+                        base.blended(withFraction: 0.45, of: .black)!.cgColor,
+                    ] as CFArray, locations: [0, 0.45, 1])!
+                    ctx.saveGState()
+                    ctx.addPath(path)
+                    ctx.clip()
+                    ctx.drawRadialGradient(face, startCenter: center, startRadius: 0,
+                                           endCenter: center, endRadius: hypot(cw, ch) / 2, options: [])
+                    ctx.restoreGState()
+                    specular(rect, path: path, alpha: 0.35)
+                    ctx.setStrokeColor(NSColor.white.withAlphaComponent(0.5).cgColor)
+                    ctx.setLineWidth(1)
+                    ctx.addPath(path)
+                    ctx.strokePath()
+                } else if custom != nil {
+                    // Assigned but at rest: a dim glow of its own color, like hardware pads.
+                    let dim = CGGradient(colorsSpace: cs, colors: [
+                        base.withAlphaComponent(0.30).cgColor,
+                        base.withAlphaComponent(0.08).cgColor,
                     ] as CFArray, locations: [0, 1])!
                     ctx.saveGState()
                     ctx.addPath(path)
                     ctx.clip()
-                    ctx.drawLinearGradient(face, start: CGPoint(x: rect.midX, y: rect.minY),
-                                           end: CGPoint(x: rect.midX, y: rect.maxY), options: [])
+                    ctx.drawRadialGradient(dim, startCenter: center, startRadius: 0,
+                                           endCenter: center, endRadius: hypot(cw, ch) / 2, options: [])
                     ctx.restoreGState()
-                    specular(rect, path: path, alpha: 0.45)
-                    ctx.setStrokeColor(NSColor.white.withAlphaComponent(0.5).cgColor)
+                    ctx.setStrokeColor(base.withAlphaComponent(0.40).cgColor)
                     ctx.setLineWidth(1)
                     ctx.addPath(path)
                     ctx.strokePath()
