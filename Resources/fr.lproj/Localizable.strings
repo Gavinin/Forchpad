@@ -49,3 +49,9 @@
 "Paused — press %@ to resume, %@ to stop." = "En pause — %@ pour reprendre, %@ pour arrêter.";
 "Lock the pointer completely while playing" = "Verrouiller complètement le pointeur pendant le jeu";
 "When off, the pointer is only paused while your fingers are on the glass." = "Désactivé, le pointeur n'est suspendu que lorsque vos doigts touchent la surface.";
+"Edit pads…" = "Modifier les pads…";
+"Edit pads" = "Modifier les pads";
+"Click a pad to color it." = "Cliquez sur un pad pour définir sa couleur.";
+"Color" = "Couleur";
+"Custom" = "Personnalisée";
+"Use default color" = "Utiliser la couleur par défaut";

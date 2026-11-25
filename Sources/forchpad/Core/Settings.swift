@@ -23,6 +23,10 @@ final class Settings {
     var pinPadsOnTop = true            // the pad window floats above other windows
     var pausePointer = true            // pause the pointer while playing; off = no permission needed
     var lockPointer = true             // freeze it for the whole performance; off = only while fingers touch
+    /// Per-pad customization, "row,col" (touch coordinates, row 0 = bottom) → style. See PadStyle.swift.
+    var padStyles: [String: PadStyle] = [:]
+    var padWindowX: Double?              // where the player parked the pads; nil = never placed yet
+    var padWindowY: Double?
 
     func load() {
         if d.object(forKey: "rows") != nil { rows = d.integer(forKey: "rows") }
@@ -41,6 +45,12 @@ final class Settings {
         if d.object(forKey: "pinPadsOnTop") != nil { pinPadsOnTop = d.bool(forKey: "pinPadsOnTop") }
         if d.object(forKey: "pausePointer") != nil { pausePointer = d.bool(forKey: "pausePointer") }
         if d.object(forKey: "lockPointer") != nil { lockPointer = d.bool(forKey: "lockPointer") }
+        if let data = d.data(forKey: "padStyles"),
+           let decoded = try? JSONDecoder().decode([String: PadStyle].self, from: data) {
+            padStyles = decoded
+        }
+        if d.object(forKey: "padWindowX") != nil { padWindowX = d.double(forKey: "padWindowX") }
+        if d.object(forKey: "padWindowY") != nil { padWindowY = d.double(forKey: "padWindowY") }
         confirmed = d.bool(forKey: "confirmed")
         clamp()
     }
@@ -73,6 +83,13 @@ final class Settings {
         d.set(pinPadsOnTop, forKey: "pinPadsOnTop")
         d.set(pausePointer, forKey: "pausePointer")
         d.set(lockPointer, forKey: "lockPointer")
+        if let data = try? JSONEncoder().encode(padStyles) {
+            d.set(data, forKey: "padStyles")
+        } else {
+            d.removeObject(forKey: "padStyles")
+        }
+        if let padWindowX { d.set(padWindowX, forKey: "padWindowX") } else { d.removeObject(forKey: "padWindowX") }
+        if let padWindowY { d.set(padWindowY, forKey: "padWindowY") } else { d.removeObject(forKey: "padWindowY") }
         d.set(confirmed, forKey: "confirmed")
     }
 }

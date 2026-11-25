@@ -49,3 +49,9 @@
 "Paused — press %@ to resume, %@ to stop." = "已暂停——按 %@ 继续，按 %@ 停止。";
 "Lock the pointer completely while playing" = "演奏时完全锁定指针";
 "When off, the pointer is only paused while your fingers are on the glass." = "关闭时，仅在手指触摸触摸板期间暂停指针。";
+"Edit pads…" = "编辑打击垫…";
+"Edit pads" = "编辑打击垫";
+"Click a pad to color it." = "点击某个打击垫即可设置它的颜色。";
+"Color" = "颜色";
+"Custom" = "自定义";
+"Use default color" = "使用默认颜色";

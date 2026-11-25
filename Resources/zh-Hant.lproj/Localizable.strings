@@ -49,3 +49,9 @@
 "Paused — press %@ to resume, %@ to stop." = "已暫停——按 %@ 繼續，按 %@ 停止。";
 "Lock the pointer completely while playing" = "演奏時完全鎖定指標";
 "When off, the pointer is only paused while your fingers are on the glass." = "關閉時，僅在手指觸摸觸控板期間暫停指標。";
+"Edit pads…" = "編輯打擊墊…";
+"Edit pads" = "編輯打擊墊";
+"Click a pad to color it." = "按一下打擊墊即可設定其顏色。";
+"Color" = "顏色";
+"Custom" = "自訂";
+"Use default color" = "使用預設顏色";

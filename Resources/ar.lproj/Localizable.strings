@@ -49,3 +49,9 @@
 "Paused — press %@ to resume, %@ to stop." = "متوقف مؤقتًا — اضغط %@ للاستئناف، %@ للإيقاف.";
 "Lock the pointer completely while playing" = "قفل المؤشر تمامًا أثناء العزف";
 "When off, the pointer is only paused while your fingers are on the glass." = "عند الإيقاف، يتوقف المؤشر فقط أثناء لمس أصابعك للسطح.";
+"Edit pads…" = "تحرير اللوحات…";
+"Edit pads" = "تحرير اللوحات";
+"Click a pad to color it." = "انقر على لوحة لتحديد لونها.";
+"Color" = "اللون";
+"Custom" = "مخصص";
+"Use default color" = "استخدام اللون الافتراضي";
