@@ -1,0 +1,56 @@
+# CI/CD for Forchpad.
+#
+# - Push to main: build-only check (catches compile breakage).
+# - Push a tag:   build, stamp the version from the tag, zip the app, and publish a
+#                 GitHub Release titled with the tag, described by the tag's commit message.
+#
+# The CI build is ad-hoc signed (no secrets configured). For Developer ID + notarized
+# releases, keep using ./build.sh release locally with your own certificates.
+name: Release
+
+on:
+  push:
+    branches: [main]
+    tags: ['*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The bundle's version comes from the tag (a leading "v" is dropped: v1.2 → 1.2).
+      - name: Stamp version from tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: plutil -replace CFBundleShortVersionString -string "${GITHUB_REF_NAME#v}" Resources/Info.plist
+
+      - name: Build the app
+        run: ./build.sh
+
+      - name: Zip the app
+        if: startsWith(github.ref, 'refs/tags/')
+        working-directory: dist
+        run: ditto -c -k --norsrc --noextattr --keepParent Forchpad.app "Forchpad-${GITHUB_REF_NAME}.zip"
+
+      # The release description is the tagged commit's full message (multiline-safe).
+      - name: Release notes from the tag's commit
+        if: startsWith(github.ref, 'refs/tags/')
+        id: notes
+        run: |
+          {
+            echo 'body<<RELEASE_NOTES'
+            git log -1 --pretty=%B
+            echo RELEASE_NOTES
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Publish the release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          body: ${{ steps.notes.outputs.body }}
+          files: dist/Forchpad-*.zip

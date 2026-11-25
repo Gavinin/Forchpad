@@ -38,6 +38,12 @@ create it once (Keychain Access → Certificate Assistant → Create a Certifica
 `SIGN_IDENTITY="your certificate name" ./build.sh`. The stable identity also keeps the
 permission across rebuilds.
 
+Every push to **main** is built by GitHub Actions. Pushing a **tag** (e.g. `git tag v1.0
+&& git push origin v1.0`) builds the app, stamps the tag as its version, and publishes a
+GitHub Release titled with the tag, described by the tag's commit message, with a zipped
+app attached. CI builds are ad-hoc signed, so after downloading one: right-click → Open,
+or run `xattr -dr com.apple.quarantine Forchpad.app`.
+
 The app is the letter **F** in your menu bar. Click it: **Settings…** opens the settings
 window, **Quit** leaves.
 
