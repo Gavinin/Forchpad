@@ -19,6 +19,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
     let pauseHotkeyLabel = NSTextField(labelWithString: "")
     let pauseRecordButton = NSButton()
     let pausePointerCheckbox = NSButton()
+    let lockPointerCheckbox = NSButton()
     let channelField = NSTextField()
     let baseNoteField = NSTextField()
     let velocityField = NSTextField()
@@ -33,6 +34,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
     private let startHotkeyCaption = NSTextField(labelWithString: "")
     private let pauseHotkeyCaption = NSTextField(labelWithString: "")
     private let pausePointerHint = NSTextField(wrappingLabelWithString: "")
+    private let lockPointerHint = NSTextField(wrappingLabelWithString: "")
     private let generalTitleCaption = NSTextField(labelWithString: "")
     private let shortcutTitleCaption = NSTextField(labelWithString: "")
     private let playingTitleCaption = NSTextField(labelWithString: "")
@@ -105,6 +107,9 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         pausePointerCheckbox.setButtonType(.switch)
         pausePointerCheckbox.target = self
         pausePointerCheckbox.action = #selector(pausePointerChanged(_:))
+        lockPointerCheckbox.setButtonType(.switch)
+        lockPointerCheckbox.target = self
+        lockPointerCheckbox.action = #selector(lockPointerChanged(_:))
 
         confirmButton.bezelStyle = .rounded
         confirmButton.target = self
@@ -147,6 +152,11 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         pausePointerHint.preferredMaxLayoutWidth = controlWidth
         pausePointerHint.lineBreakMode = .byWordWrapping
         pausePointerHint.maximumNumberOfLines = 0
+        lockPointerHint.font = NSFont.systemFont(ofSize: 11)
+        lockPointerHint.textColor = .secondaryLabelColor
+        lockPointerHint.preferredMaxLayoutWidth = controlWidth
+        lockPointerHint.lineBreakMode = .byWordWrapping
+        lockPointerHint.maximumNumberOfLines = 0
 
         for title in [generalTitleCaption, shortcutTitleCaption, playingTitleCaption, midiTitleCaption] {
             title.font = NSFont.boldSystemFont(ofSize: 13)
@@ -193,6 +203,8 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
             [caption(colsCaption), colsCluster],
             [NSGridCell.emptyContentView, pausePointerCheckbox],
             [NSGridCell.emptyContentView, pausePointerHint],
+            [NSGridCell.emptyContentView, lockPointerCheckbox],
+            [NSGridCell.emptyContentView, lockPointerHint],
         ]))
         let midiSection = section(midiTitleCaption, formGrid([
             [caption(channelCaption), channelField],
@@ -266,6 +278,12 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         if settings.pausePointer {
             ensureAccessibilityInterest()
         }
+        performStateChanged()
+    }
+
+    @objc func lockPointerChanged(_ sender: NSButton) {
+        settings.lockPointer = sender.state == .on
+        settings.save()
         performStateChanged()
     }
 
@@ -387,6 +405,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         startHotkeyLabel.stringValue = settings.hotkeyDisplay
         pauseHotkeyLabel.stringValue = settings.pauseHotkeyDisplay
         pausePointerCheckbox.state = settings.pausePointer ? .on : .off
+        lockPointerCheckbox.state = settings.lockPointer ? .on : .off
         updateDevicePopup()
         updateLanguagePopup()
         updateConfirmButton()
@@ -441,6 +460,8 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
         pauseHotkeyCaption.stringValue = L("Temporary pause")
         pausePointerCheckbox.title = L("Pause the pointer while playing")
         pausePointerHint.stringValue = L("When off, touches also move and click the pointer.")
+        lockPointerCheckbox.title = L("Lock the pointer completely while playing")
+        lockPointerHint.stringValue = L("When off, the pointer is only paused while your fingers are on the glass.")
         generalTitleCaption.stringValue = L("General")
         shortcutTitleCaption.stringValue = L("Shortcut settings")
         playingTitleCaption.stringValue = L("Playing")
@@ -475,6 +496,8 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
                         recordButton, pauseRecordButton, pausePointerCheckbox, channelField, baseNoteField, velocityField, confirmButton] {
             control.isEnabled = editable
         }
+        // Full lock only makes sense when the pointer pauses at all.
+        lockPointerCheckbox.isEnabled = editable && settings.pausePointer
         updateDevicePopup()
     }
 

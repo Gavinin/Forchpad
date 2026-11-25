@@ -22,6 +22,7 @@ final class Settings {
     var languageOverride: String?      // nil = follow the system language
     var pinPadsOnTop = true            // the pad window floats above other windows
     var pausePointer = true            // pause the pointer while playing; off = no permission needed
+    var lockPointer = true             // freeze it for the whole performance; off = only while fingers touch
 
     func load() {
         if d.object(forKey: "rows") != nil { rows = d.integer(forKey: "rows") }
@@ -39,6 +40,7 @@ final class Settings {
         languageOverride = d.string(forKey: "languageOverride")
         if d.object(forKey: "pinPadsOnTop") != nil { pinPadsOnTop = d.bool(forKey: "pinPadsOnTop") }
         if d.object(forKey: "pausePointer") != nil { pausePointer = d.bool(forKey: "pausePointer") }
+        if d.object(forKey: "lockPointer") != nil { lockPointer = d.bool(forKey: "lockPointer") }
         confirmed = d.bool(forKey: "confirmed")
         clamp()
     }
@@ -70,6 +72,7 @@ final class Settings {
         d.set(languageOverride, forKey: "languageOverride")
         d.set(pinPadsOnTop, forKey: "pinPadsOnTop")
         d.set(pausePointer, forKey: "pausePointer")
+        d.set(lockPointer, forKey: "lockPointer")
         d.set(confirmed, forKey: "confirmed")
     }
 }

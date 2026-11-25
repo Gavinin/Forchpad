@@ -47,3 +47,5 @@
 "Start/Stop" = "Start/Stop";
 "Temporary pause" = "Temporary pause";
 "Paused — press %@ to resume, %@ to stop." = "Paused — press %@ to resume, %@ to stop.";
+"Lock the pointer completely while playing" = "Lock the pointer completely while playing";
+"When off, the pointer is only paused while your fingers are on the glass." = "When off, the pointer is only paused while your fingers are on the glass.";

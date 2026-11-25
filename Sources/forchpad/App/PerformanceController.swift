@@ -9,6 +9,7 @@ var pendingStart = false
 var pendingStartDeadline = Date.distantPast
 var startedDevice: TrackpadDevice?
 var permissionProblem = false
+var cursorHidden = false
 
 enum StopReason { case shortcut, pause, deviceLost, sleep, quit }
 
@@ -95,6 +96,11 @@ func beginPerformance() {
     startedDevice = dev
     startEngine()
     performing = true
+    // Full lock hides the cursor outright: a frozen pointer on screen is just a distraction.
+    if settings.pausePointer && settings.lockPointer {
+        NSCursor.hide()
+        cursorHidden = true
+    }
     os_unfair_lock_lock(&displayLock)
     displayState.performing = true
     os_unfair_lock_unlock(&displayLock)
@@ -152,6 +158,10 @@ func stopPerformance(reason: StopReason) {
         startedDevice = nil
     }
     removeEventTap()
+    if cursorHidden {
+        NSCursor.unhide()
+        cursorHidden = false
+    }
     clearTouchState()
     os_unfair_lock_lock(&displayLock)
     displayState.performing = false

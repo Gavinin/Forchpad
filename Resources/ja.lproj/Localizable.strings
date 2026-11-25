@@ -47,3 +47,5 @@
 "Start/Stop" = "開始/停止";
 "Temporary pause" = "一時停止";
 "Paused — press %@ to resume, %@ to stop." = "一時停止中 — %@ で再開、%@ で停止。";
+"Lock the pointer completely while playing" = "演奏中はポインターを完全にロック";
+"When off, the pointer is only paused while your fingers are on the glass." = "オフの場合、指がガラスに触れている間だけポインターが停止します。";
