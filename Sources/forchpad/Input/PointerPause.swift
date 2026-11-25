@@ -1,10 +1,11 @@
 import Cocoa
 
-/// While playing, the pointer pauses only for as long as fingers touch the selected
-/// trackpad: drumming never moves or clicks the cursor, but lifting every finger brings
-/// the mouse straight back, so the pad window's pin button and the DAW stay usable.
-/// macOS has no public way to silence one trackpad; this tap drops events from every
-/// pointing device during a touch, and it dies with the process, so input always returns.
+/// While playing, this tap is what stands between the trackpad and the pointer. Two modes:
+/// full lock (default) drops every mouse/scroll event for the whole performance — the
+/// cursor freezes and even double-clicks can't leak onto other windows, game-style. The
+/// gentler mode drops events only while fingers touch the glass, so lifting them brings
+/// the mouse straight back. macOS has no public way to silence one trackpad; the tap dies
+/// with the process, so input always returns.
 var eventTap: CFMachPort?
 var tapRunLoopSource: CFRunLoopSource?
 
@@ -13,7 +14,7 @@ let tapCallback: CGEventTapCallBack = { _, type, event, _ in
         if let tap = eventTap { CGEvent.tapEnable(tap: tap, enable: true) }
         return nil
     }
-    if performing && touchIsActive() { return nil }
+    if performing && (settings.lockPointer || touchIsActive()) { return nil }
     return Unmanaged.passUnretained(event)
 }
 

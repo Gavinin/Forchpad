@@ -47,3 +47,5 @@
 "Start/Stop" = "开启/停止";
 "Temporary pause" = "临时暂停";
 "Paused — press %@ to resume, %@ to stop." = "已暂停——按 %@ 继续，按 %@ 停止。";
+"Lock the pointer completely while playing" = "演奏时完全锁定指针";
+"When off, the pointer is only paused while your fingers are on the glass." = "关闭时，仅在手指触摸触摸板期间暂停指针。";

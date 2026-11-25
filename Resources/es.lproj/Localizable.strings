@@ -47,3 +47,5 @@
 "Start/Stop" = "Iniciar/Detener";
 "Temporary pause" = "Pausa temporal";
 "Paused — press %@ to resume, %@ to stop." = "En pausa — pulsa %@ para continuar, %@ para detener.";
+"Lock the pointer completely while playing" = "Bloquear el puntero por completo al tocar";
+"When off, the pointer is only paused while your fingers are on the glass." = "Desactivado, el puntero solo se pausa mientras tus dedos tocan la superficie.";

@@ -81,11 +81,13 @@ languages fall back to English), and any choice applies immediately.
 
 ## 04 / what to know before a gig
 
-- **The pointer pauses only while your fingers are on the trackpad.** Lift them and the
-  mouse works again instantly — that's how you reach the pad window's pin button, or your
-  DAW, without stopping the performance. macOS has no public way to silence one trackpad,
-  so during a touch all pointing devices are paused, and one event may slip through in the
-  instant a touch begins.
+- **By default the pointer is fully locked while you play** — frozen and hidden, so not
+  even a stray double-click can land on another window. The pause shortcut (⇧⌘P) is the
+  way back to it: notes stop, the pad window stays up, and the pin button and your DAW
+  become clickable. Prefer the gentler mode where the pointer only pauses while your
+  fingers touch the glass? Turn off **Lock the pointer completely while playing** in
+  Settings. macOS has no public way to silence one trackpad, so during a touch all
+  pointing devices are paused.
 - **Play on the device you picked.** With an external trackpad connected, macOS can ignore
   the built-in one (System Settings → Accessibility → Pointer Control → "Ignore built-in
   trackpad when mouse or wireless trackpad is present") — then the built-in streams no
