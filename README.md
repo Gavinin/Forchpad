@@ -4,6 +4,9 @@
 
 Play your Mac's Force Touch trackpad as a grid of MIDI pads.
 
+**[forchpad website](https://gavinin.github.io/Forchpad/)** — tour and download,
+in all eight languages the app speaks.
+
 It lives in the menu bar — no Dock icon. Press a global shortcut and a small pad window
 appears on top of everything: every finger is a pad, every pad is a MIDI note. Your DAW sees
 a plain MIDI input called **Forchpad**. Press the shortcut again and your trackpad is
